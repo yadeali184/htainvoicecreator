@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTA Free Invoice Creator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰ Edit Invoice</button>
+
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                    <div>
+                        <h2>HTA Free Invoice Creator</h2>
+                        <p>Professional Invoices in Seconds</p>
+                    </div>
+                    <button class="close-sidebar" onclick="toggleSidebar()">✕</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Templates</div>
+                <div class="template-grid">
+                    <div class="tpl-btn active" onclick="setTemplate(1)" id="tpl1"><div class="tpl-swatch" style="background:#1a1a2e"></div>NAVY</div>
+                    <div class="tpl-btn" onclick="setTemplate(2)" id="tpl2"><div class="tpl-swatch" style="background:#1d6fa5"></div>OCEAN</div>
+                    <div class="tpl-btn" onclick="setTemplate(3)" id="tpl3"><div class="tpl-swatch" style="background:#2d7a4f"></div>FOREST</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Your Business</div>
+                <label>Company Logo</label>
+                <input type="file" id="logo-upload" accept="image/*" onchange="handleLogo(event)">
+                <label>Company Name</label>
+                <input id="from-name" placeholder="e.g. Apex Solutions LLC" oninput="render()">
+                <label>Address</label>
+                <textarea id="from-addr" rows="2" placeholder="e.g. 450 Lexington Ave, New York, NY 10017" oninput="render()"></textarea>
+                <div class="row2">
+                    <div><label>Phone</label><input id="from-phone" placeholder="e.g. +1 (212) 555-0100" oninput="render()"></div>
+                    <div><label>Email</label><input id="from-email" placeholder="e.g. billing@yourco.com" oninput="render()"></div>
+                </div>
+                <label>Website</label>
+                <input id="from-web" placeholder="e.g. www.yourcompany.com" oninput="render()">
+            </div>
+
+            <div class="section">
+                <div class="section-title">Bill To</div>
+                <input id="to-name" placeholder="e.g. John Doe / ABC Corp" oninput="render()">
+                <textarea id="to-addr" rows="2" placeholder="e.g. 200 Park Ave, New York, NY 10166" oninput="render()" style="margin-top:5px"></textarea>
+                <div class="row2">
+                    <div><label>Client Phone</label><input id="to-phone" placeholder="e.g. +1 (646) 555-0199" oninput="render()"></div>
+                    <div><label>Client Email</label><input id="to-email" placeholder="e.g. john@abccorp.com" oninput="render()"></div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Invoice Details</div>
+                <div class="row2">
+                    <div><label>Invoice #</label><input id="inv-num" placeholder="e.g. INV-001" oninput="render()"></div>
+                    <div><label>Currency</label>
+                        <select id="currency" onchange="render()">
+                            <option value="$">USD ($)</option>
+                            <option value="PKR ">PKR</option>
+                            <option value="£">GBP (£)</option>
+                            <option value="€">EUR (€)</option>
+                            <option value="C$">CAD (C$)</option>
+                            <option value="A$">AUD (A$)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row2">
+                    <div><label>Invoice Date</label><input id="inv-date" type="date" oninput="render()"></div>
+                    <div><label>Due Date</label><input id="due-date" type="date" oninput="render()"></div>
+                </div>
+                <label>Payment Method</label>
+                <select id="pay-method" onchange="render()">
+                    <option value="">-- Select --</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                    <option value="Check">Check</option>
+                    <option value="Credit Card">Credit Card</option>
+                    <option value="PayPal">PayPal</option>
+                    <option value="Zelle">Zelle</option>
+                    <option value="Venmo">Venmo</option>
+                    <option value="Cash">Cash</option>
+                </select>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Line Items</div>
+                <div id="items-container"></div>
+                <button class="add-btn" onclick="addItem()">+ Add Item</button>
+                <div class="totals-block">
+                    <div class="total-row"><span>Subtotal</span><span id="sub-disp">$0.00</span></div>
+                    <div class="total-row">
+                        <span>Discount (<input type="number" id="discount" value="0" min="0" max="100" oninput="render()" style="width:40px;padding:2px 4px;font-size:12px;display:inline">%)</span>
+                        <span id="disc-disp">-$0.00</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Tax (<input type="number" id="tax" value="0" min="0" max="100" oninput="render()" style="width:40px;padding:2px 4px;font-size:12px;display:inline">%)</span>
+                        <span id="tax-disp">$0.00</span>
+                    </div>
+                    <div class="total-row grand"><span>Total</span><span id="total-disp">$0.00</span></div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Final Touches</div>
+                <label>Terms & Notes</label>
+                <textarea id="terms-notes" rows="3" placeholder="e.g. Please make checks payable to Apex Solutions LLC. Wire transfers: Chase Bank, Routing: 021000021, Account: 987654321." oninput="render()"></textarea>
+                <label>Authorized Signatory</label>
+                <input id="sig-name" placeholder="e.g. Michael Johnson" oninput="render()">
+                <label>Signatory Title</label>
+                <input id="sig-title" placeholder="e.g. CEO / Accountant / Manager" oninput="render()">
+                <div style="display:flex;align-items:center;margin-top:12px;gap:8px">
+                    <input type="checkbox" id="show-paid" onchange="render()" style="width:auto">
+                    <label style="margin:0">Mark as PAID</label>
+                </div>
+            </div>
+
+            <button class="download-btn" onclick="downloadPDF()">⬇ Download PDF</button>
+        </div>
+
+        <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+        <div class="main">
+            <div class="invoice-wrap">
+                <div id="invoice-preview"></div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
